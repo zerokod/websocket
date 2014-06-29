@@ -1,0 +1,116 @@
+<!DOCTYPE  html>
+<html>
+	<head>
+		<title>WebSocket esempio</title>
+		
+		<style>
+			body{
+				font-family:Helvetica, Arial, sans-serif;
+				border: 2px solid #000000;
+				margin: 1px;
+			}
+			
+			body section{
+				font-family: "Calisto MT" , Arial, sans-serif;
+				border: 2px solid #0000ff;
+				padding: 2px;
+				margin: 1px;
+			}
+			
+			body section article{
+				font-family:"Courier New" , Arial, sans-serif;
+				border: 2px  solid #00ffff;
+				padding: 4px;
+				margin: 1px;
+			}
+			
+			#messaggiErrore{
+				color:#ff0000;
+				padding: 6px;
+				margin: 1px;
+			}
+			
+		</style>
+		<script>
+			// creo la variabile di "tipo" WebSocket
+			var connection = new WebSocket("ws://html5rocks.websocket.org/echo");
+			// verifico che sia stata creata
+			if(!connection){
+				// se non Ã¨ stata creata Ã¨ indice che il client non supporta i websocket
+				alert("websocket non supportati");
+				document.getElementById("messaggiErrore").innerHTML += "<strong>websocket non supportati!!!</strong>";
+
+			}else{
+				// setto i comportamenti
+				
+				// in caso di errore
+				connection.onerror = function(error){
+					console.log("si Ã¨ verificato un errore: "+error.message);
+					document.getElementById("messaggiErrore").innerHTML += error.message;
+				};
+				
+				// in caso di errore
+				connection.onmessage = function(e){
+					console.log("ho ricevuto il messaggio: "+e.data);
+					document.getElementById("messaggi").innerHTML +="- "+new Date()+"  "+e.data+"<br>";
+				};
+				
+				// quando apro la connessione 
+				connection.onopen = function(e){
+					console.log("ho aperto la connessione: "+e.data);
+					document.getElementById("messaggi").innerHTML +="- "+new Date()+
+														"  connessione aperta"+e.data+"<br>";
+				};
+				
+			}
+			
+			function sendMex(mex){
+				if (connection.readyState==WebSocket.OPEN){
+					connection.send(mex);
+				}else{
+					console.log("Il web socket risulta chiuso ");
+					document.getElementById("messaggiErrore").innerHTML += "Il web socket"+
+					 "risulta chiuso ";
+				}
+			}
+			
+			function chiudiSocket(){
+				if (connection.readyState==WebSocket.OPEN){
+					connection.close();
+					console.log("Il web socket Ã¨ stato chiuso");
+					document.getElementById("messaggi").innerHTML +="- "+
+							new Date()+" il socket Ã¨ stato chiuso<br>";
+				}else{
+					console.log("Il web socket non era aperto ");
+				}
+			}
+			
+		</script>
+	</head>
+	
+	<body>
+		<h1>Esempio WebSocket</h1>
+		<section id=sec_comandi>
+			<h1>Comandi di gestione del webSocket</h1>
+			<article id=comandi>
+				<label id=label_mex for=mex>Messaggio da inviare: </label>
+				<input id=mex >
+				<button id=sendMex onclick="sendMex(document.getElementById('mex').value);">Manda messaggio</button><br>
+				<br>
+				<button id=closeSock onclick="chiudiSocket();">Chiudi socket</button><br>
+			</article>
+		</section>
+		<section id=sec_messaggi>
+			<h1>Messaggi inerenti il socket</h1>
+			<article id=messaggi>
+				<h1>Messaggi ricevuti</h1>
+			</article>
+			<article id=messaggiErrore>
+				<h1>Messaggi di errore</h1>
+			</article>
+			
+		</section>
+		
+			
+	</body>
+</html>
